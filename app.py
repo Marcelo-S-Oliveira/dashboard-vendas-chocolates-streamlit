@@ -16,6 +16,16 @@ vendas_df = pd.read_csv("dados-vendas-chocolate.csv")
 ##--Conversão tipo de dados da coluna Data--
 vendas_df['Data'] = pd.to_datetime(vendas_df['Data'])
 
+#--Cores países--
+cores_paises = {
+    'Australia': '#FFB300',     
+    'UK': '#1E3A8A',            
+    'India': '#F57C00',          
+    'USA': '#1565C0',           
+    'Canada': '#C62828',         
+    'New Zealand': '#2E7D32'     
+}
+
 #--Barra lateral--
 st.sidebar.header("Filtros")
 
@@ -105,12 +115,14 @@ with col_graf1:
         )
 
         df_pais['Valor_milhoes'] = df_pais['Valor'] / 1_000_000
-
+        
         fig = px.bar(
             df_pais,
             x='País',
             y='Valor_milhoes',
             title='Faturamento por País',
+            color='País',
+            color_discrete_map=cores_paises,
             labels={
                 'Valor_milhoes':'Faturamento (R$ milhões)',
                 'País': 'País'
@@ -138,13 +150,22 @@ with col_graf2:
         )
 
         df_produto['Valor_milhoes'] = df_produto['Valor'] / 1_000_000
-
+        
+        cores_produtos = {
+            'Chocolate Amargo': '#4E342E',
+            'Chocolate Ao Leite': '#6D4C41',
+            'Chocolate Branco': '#F5F5DC',
+            'Chocolate Meio Amargo': '#5D4037'
+        }
+        
         fig = px.bar(
             df_produto,
             x='Produto',
             y='Valor_milhoes',
             title='Faturamento por Produto',
-
+            color='Produto',
+            color_discrete_map=cores_produtos,
+            
             labels={
                 'Produto':'Produto',
                 'Valor_milhoes':'Faturamento (R$ milhões)'
@@ -198,12 +219,14 @@ with col_graf4:
             .sort_values(by='Caixas Enviadas', ascending=False)
             .reset_index(drop=True)
         )
-
+        
         fig = px.bar(
             df_caixas,
             x='País',
             y='Caixas Enviadas',
-            title='Total de Caixas Enviadas por País'
+            title='Total de Caixas Enviadas por País',
+            color='País',
+            color_discrete_map=cores_paises
         )
                 
         st.plotly_chart(fig, use_container_width=True)
@@ -222,7 +245,7 @@ with col_graf5:
                 'Valor': 'mean'
             })
         )
-
+        
         fig = px.scatter(
             df_scatter,
             x='Caixas Enviadas',
@@ -230,6 +253,7 @@ with col_graf5:
             color='País',
             size='Valor',
             title='Valor Médio x Caixas Enviadas (por País)',
+            color_discrete_map=cores_paises,
             labels={
                'Caixas Enviadas': 'Caixas Enviadas (média)',
                'Valor': 'Valor Médio (R$)'
