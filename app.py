@@ -175,27 +175,20 @@ with col_graf2:
             df_filtrado
             .groupby('Produto', as_index=False)['Valor']
             .sum()
-            .sort_values(by='Valor', ascending=False)
+            .sort_values(by='Valor', ascending=True)
             .reset_index(drop=True)
         )
 
         df_produto['Valor_milhoes'] = df_produto['Valor'] / 1_000_000
-        
-        cores_produtos = {
-            'Chocolate Amargo': '#4E342E',
-            'Chocolate Ao Leite': '#6D4C41',
-            'Chocolate Branco': '#F5F5DC',
-            'Chocolate Meio Amargo': '#5D4037'
-        }
-        
+             
         fig = px.bar(
             df_produto,
-            x='Produto',
-            y='Valor_milhoes',
+            x='Valor_milhoes',
+            y='Produto',
+            orientation='h',
             title='Faturamento por Produto',
-            color='Produto',
-            color_discrete_map=cores_produtos,
-            
+            color='Valor_milhoes',
+            color_continuous_scale='Blues',           
             labels={
                 'Produto':'Produto',
                 'Valor_milhoes':'Faturamento (R$ milhões)'
@@ -206,7 +199,16 @@ with col_graf2:
             }   
         )
         
-        fig.update_yaxes(tickformat=',.2f')
+        fig.update_layout(
+            height=550,
+            coloraxis_showscale=False,   
+            bargap=0.2,
+            yaxis_title='Produto',
+            xaxis_title='Faturamento (R$ milhões)'
+        )
+        
+        fig.update_xaxes(tickformat=',.2f')
+        
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.warning("Nenhum dado disponível para exibir o gráfico.")
