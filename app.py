@@ -166,8 +166,8 @@ with col_graf1:
         fig.update_yaxes(tickformat=',.2f')
         
         fig.update_layout(
-            bargap=0.15,        # espaço ENTRE categorias
-            bargroupgap=0.05    # espaço ENTRE barras do mesmo grupo
+            bargap=0.2,      
+            height=600   
         )
         
         st.plotly_chart(fig, use_container_width=True)
