@@ -30,41 +30,71 @@ cores_paises = {
 st.sidebar.header("Filtros")
 
 #--Filtro Ano--
-anos_disponiveis = sorted(vendas_df['Ano'].unique())
-anos_selecionados = st.sidebar.multiselect(
+anos_min = int(vendas_df['Ano'].min())
+anos_max = int(vendas_df['Ano'].max())
+
+anos_selecionados = st.sidebar.select_slider(
     "Ano",
-    anos_disponiveis,
-    default=anos_disponiveis
+    options=list(range(anos_min, anos_max + 1)),
+    value=(anos_min, anos_max)
 )
 
 #--Filtro Mês--
-meses_disponiveis = sorted(vendas_df['Mes'].unique())
-meses_selecionados = st.sidebar.multiselect(
+mes_min = int(vendas_df['Mes'].min())
+mes_max = int(vendas_df['Mes'].max())
+
+meses_selecionados = st.sidebar.select_slider(
     "Mês",
-    meses_disponiveis,
-    default=meses_disponiveis
+    options=list(range(mes_min, mes_max + 1)),
+    value=(mes_min, mes_max)
 )
 
 #--Filtro País--
 paises_disponiveis = sorted(vendas_df['País'].unique())
-paises_selecionados = st.sidebar.multiselect(
-    "País",
-    paises_disponiveis,
-    default=paises_disponiveis
-)
 
+with st.sidebar.expander("País", expanded=True):
+    
+    todos_paises = st.checkbox( "Selecione todos", value=True)
+    
+    if todos_paises:
+        paises_selecionados = st.multiselect(
+            "",
+            paises_disponiveis,
+            default=paises_disponiveis
+        )
+    else:
+        paises_selecionados = st.multiselect(
+            "",
+            paises_disponiveis
+        )    
+        
 #--Filtro Produto--
-produtos_disponiveis = sorted(vendas_df['Produto'].unique())
-produtos_selecionados = st.sidebar.multiselect(
-    "Produto",
-    produtos_disponiveis,
-    default=produtos_disponiveis
-)
+with st.sidebar.expander("Produto", expanded=False):
+
+    produtos_filtrados = (
+        vendas_df[vendas_df['País'].isin(paises_selecionados)]
+        ['Produto']
+        .unique()
+    )
+
+    todos_produtos = st.checkbox("Selecionar todos os produtos", value=True)
+
+    if todos_produtos:
+        produtos_selecionados = st.multiselect(
+            "",
+            sorted(produtos_filtrados),
+            default=sorted(produtos_filtrados)
+        )
+    else:
+        produtos_selecionados = st.multiselect(
+            "",
+            sorted(produtos_filtrados)
+        )
 
 #--Filtragem do DataFrame: Com base da barra lateral--
 df_filtrado = vendas_df[
-    (vendas_df['Ano'].isin(anos_selecionados)) &
-    (vendas_df['Mes'].isin(meses_selecionados)) &
+    (vendas_df['Ano'].between(anos_selecionados[0], anos_selecionados[1])) &
+    (vendas_df['Mes'].between(meses_selecionados[0], meses_selecionados[1])) &
     (vendas_df['País'].isin(paises_selecionados)) &
     (vendas_df['Produto'].isin(produtos_selecionados))
 ]
