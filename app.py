@@ -165,6 +165,11 @@ with col_graf1:
 
         fig.update_yaxes(tickformat=',.2f')
         
+        fig.update_layout(
+            bargap=0.15,        # espaço ENTRE categorias
+            bargroupgap=0.05    # espaço ENTRE barras do mesmo grupo
+        )
+        
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.warning("Nenhum dado disponível para exibir o gráfico.")
